@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset=utf-8 />
+  <title>test-skype</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <style>
+  body {
+    margin: 0;
+    padding: 0;
+  }
+  #map {
+    position:absolute;
+    top:0;
+    bottom:0;
+    width:100%;
+  }
+  </style>
+
+  <script src='https://api.mapbox.com/mapbox.js/v2.2.2/mapbox.js'></script>
+  <link href='https://api.mapbox.com/mapbox.js/v2.2.2/mapbox.css' rel='stylesheet' />
+  <!--
+  <link href="../lib/mapbox.css" rel="stylesheet" />
+  <script src="../lib/mapbox.js"></script>
+-->
+<script src="../bower_components/pubnub/web/pubnub.min.js"></script>
+<script src="../pubnub-mapbox.js"></script>
+
+<script type="text/javascript" src="http://pubnub.github.io/eon/v/eon/0.0.9/eon.js"></script>
+<link type="text/css" rel="stylesheet" href="http://pubnub.github.io/eon/v/eon/0.0.9/eon.css"/>
+
+</head>
+<body>
+  <div id='map'></div>
+  <script>
+  function getNonZeroRandomNumber(){
+    var random = Math.floor(Math.random()*199) - 99;
+    if(random==0) return getNonZeroRandomNumber();
+    return random;
+  }
+  </script>
+  <script>
+  // this stream is really slow, you may need to wait to see markers appear
+  var pubnub = PUBNUB.init({
+    publish_key: 'pub-c-60f5eb70-ef1c-4d78-be5b-d5741bbf77e3',
+    subscribe_key: 'sub-c-97f94090-79a1-11e5-8d3c-0619f8945a4f'
+  });
+
+  pubnub.subscribe({
+    channel: 'test-skype',
+    message: function(m){console.log(m)},
+    error: function (error) {
+      // Handle error here
+      console.log(JSON.stringify(error));
+    }
+  });
+
+  var point = {latlng:[20.638427, -103.383043]};
+
+  var map =  eon.map({
+    pubnub: pubnub,
+    id: 'map',
+    mb_token: 'pk.eyJ1IjoiZWdvbWV6IiwiYSI6ImNpZmI1dDM2ODJoYWhzbWx4ZHBvd25qYXEifQ.Znov4-HxFW_e_j7btNmJpg',
+    mb_id: 'egomez.noeji2o6',
+    channel: 'test-skype',
+    options: {
+      zoomAnimation: false,
+    },
+    marker: function (latlng, data) {
+
+      var marker = new L.Marker(latlng, {
+        icon: L.icon({
+          iconUrl: 'transport-bus-side-512.png',
+          iconSize: [24, 24]
+        })
+      });
+      //marker.bindPopup('Route ' + data.routeTag.toUpperCase());
+      var popup = '';
+      if (data) {
+        popup = 'Datos ' + data + '';
+      }
+      else {
+        var popup = 'No data available';
+      }
+
+      marker.bindPopup(popup);
+
+      return marker;
+    },
+
+  });
+  //latlng: [20.638427, -103.383043]
+  </script>
+</body>
+</html>
