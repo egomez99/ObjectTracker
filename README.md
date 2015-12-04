@@ -1,6 +1,3 @@
-Github README.md
-========================
-
 ## ObjectTracker ##
 
 The repository contains the following components:
